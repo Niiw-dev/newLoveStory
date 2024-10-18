@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-image: url("../images/Cumple.jpeg");
+    background-position: center;
+    background-size: cover; 
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+.logout-container {
+    background-color: rgba(172, 252, 255, 0.267); /* Amarillo translúcido */
+    width: 70%;
+    max-width: 800px;
+    padding: 50px;
+    border: 1px solid wwrgba(230, 230, 230, 0.281); /* Hacer más translúcida la línea del borde */
+    display: flex;
+    justify-content: center;  /* Centra horizontalmente */
+    align-items: center;  /* Centra verticalmente */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    backdrop-filter: blur(10px); /* Difumina el fondo detrás */
+}
+
+.logout-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Centra el contenido */
+    text-align: center;  /* Centra el texto */
+}
+
+.logout-title {
+    font-size: 2.2rem;
+    color: #5e2c2b;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+}
+
+.highlight {
+    font-family: 'Lobster', cursive;
+    color: #ff4c4c;
+    font-size: 2.5rem;
+}
+
+.bold {
+    font-weight: bold;
+    font-size: 2.5rem;
+}
+
+.logout-icon {
+    margin-top: 10px;
+}
+
+.logout-icon img {
+    width: 120px;
+    height: 120px;
+}
+
+.register-again {
+    margin-top: 20px;
+    text-decoration: none;
+    color: #5e2c2b;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.register-again:hover {
+    color: #ff4c4c;
+}
+
+
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px; /* Ajusta el tamaño del icono */
+    color: #000000;
+    text-decoration: none;
+    background-color: #ffffff;
+    width: 30px; /* Ajusta el ancho del botón */
+    height: 30px; /* Ajusta la altura del botón */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #ffd69f;
+}

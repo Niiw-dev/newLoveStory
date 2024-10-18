@@ -1,0 +1,80 @@
+{% extends "header_footer.html" %}
+{% block titulo %}Acerca de nosotros{% endblock %}
+
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/acerca_de_nosotros.css' %}">
+</head>
+<div class="acerca-nosotros-container">
+    <div class="left-column">
+        <h1>Acerca de nosotros</h1>
+        <p>Descubre más sobre nuestra empresa y nuestro equipo dedicado a hacer realidad tus sueños.</p>
+        
+        <h2>Nuestro Equipo</h2>
+        <ul>
+            <li>Fotógrafos</li>
+            <li>Diseñadores</li>
+            <li>Coordinadores</li>
+            <li>Asesores</li>
+        </ul>
+        
+        <button class="ver-catalogo">Ver catálogo →</button>
+    </div>
+    
+    <div class="right-column">
+        <div class="carousel">
+            
+            <div class="carousel-items">
+                <div class="carousel-item">
+                    <img src="{% static 'images/Foto7.jpeg' %}" alt="Miembro 1">
+                    <h3>Nombre 1</h3>
+                    <p>Cargo 1</p>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/Foto6.jpeg' %}"alt="Miembro 2">
+                    <h3>Nombre 2</h3>
+                    <p>Cargo 2</p>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/Foto5.jpeg' %}" alt="Miembro 3">
+                    <h3>Nombre 3</h3>
+                    <p>Cargo 3</p>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/Foto1.jpeg' %}" alt="Miembro 4">
+                    <h3>Nombre 4</h3>
+                    <p>Cargo 4</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="valores-section">
+    <h2>Nuestros Valores</h2>
+    <p>Conoce los principios que guían nuestro trabajo y compromiso con los clientes.</p>
+    <div class="valores-grid">
+        <div class="valor">
+            <img src="{% static 'images/Foto2.jpeg' %}" alt="Valor 1">
+            <h3>Valor 1</h3>
+            <p>Descripción del valor 1</p>
+        </div>
+        <div class="valor">
+            <img src="{% static 'images/Foto3.jpeg' %}" alt="Valor 2">
+            <h3>Valor 2</h3>
+            <p>Descripción del valor 2</p>
+        </div>
+        <div class="valor">
+            <img src="{% static 'images/Foto4.jpeg' %}" alt="Valor 3">
+            <h3>Valor 3</h3>
+            <p>Descripción del valor 3</p>
+        </div>
+    </div>
+    <button class="ver-todos">Ver todos los valores →</button>
+</div>
+<script src="{% static 'js/acerca_de_nosotros.js' %}"></script>
+{% endblock %}

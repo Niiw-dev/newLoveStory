@@ -1,0 +1,27 @@
+{% block titulo %}{% endblock %}
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasta Pronto</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/logout.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="logout-container">
+        <div class="logout-content">
+            <h1 class="logout-title"><span class="highlight">Espero</span> y sea un <br> <span class="bold">Hasta Pronto</span></h1>
+            <div class="logout-icon">
+                <img src="{% static 'images/Logout 2.png' %}" alt="Logout Icon">
+            </div>
+            <a href="{% url 'login' %}" class="register-again">Volver a registrarse</a>
+        </div>
+    </div>
+    <a href="{% url 'inicio' %}" class="back-button"><i class="fas fa-arrow-left"></i></a>
+</body>
+</html>
+{% endblock %}

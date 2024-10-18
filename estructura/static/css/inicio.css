@@ -1,0 +1,147 @@
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    background-color: #a8dee257;
+    padding: 50px 0;
+}
+
+.hero-content {
+    flex: 1;
+    padding: 0 50px;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background-color: #ffd69f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.hero-image {
+    flex: 1;
+    height: 400px;
+    background-image: url("../images/Cumple2.jpeg");
+    background-size: cover;
+    background-position: center;
+}
+
+/* Organize Section */
+.organize {
+    padding: 50px 0;
+    text-align: center;
+}
+
+.organize h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.organize-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.organize-card {
+    flex: 1;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.organize-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.card-content p {
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffd69f;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* Features Section */
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px 0;
+    background-color: #f8f8f8;
+}
+
+.feature {
+    text-align: center;
+    max-width: 300px;
+}
+
+.feature img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.feature h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.feature p {
+    font-size: 0.9em;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600; /* Aplica el peso de la fuente que seleccionaste */
+}
+
+p, a, span, li {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200; /* Aplica el peso de la fuente que seleccionaste */
+}

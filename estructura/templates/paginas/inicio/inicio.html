@@ -1,0 +1,86 @@
+{% extends "header_footer.html" %}
+{% block titulo %}LoveStory{% endblock %}
+{% block contenido %}
+<html lang="es">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet"> <!-- Ejemplo de Google Fonts con fuente cursiva -->
+</head>
+<main>
+    <body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Encuentra todo lo que necesitas para el evento de tus sueños</h1>
+            <p>¡Tienes una variedad de opciones para elegir</p>
+            <form class="search-form">
+                <input type="text" placeholder="Buscar por nombre o por catego..." />
+                <input type="text" placeholder="Dónde" />
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+        <div class="hero-image">
+            <!-- La imagen de fondo se agregará con CSS -->
+        </div>
+    </section>
+    <section class="organize">
+        <h2>Disfruta organizando tu evento soñado.</h2>
+        <p>Empieza a planificar tu evento con nosotros.</p>
+        
+        <div class="organize-grid">
+            <div class="organize-card">
+                <img src="{% static 'images/Foto4.jpeg' %}" alt="Lugares para matrimonio">
+                <div class="card-content">
+                    <h3>Lugares para matrimonio</h3>
+                    <p>Chequea las fotos, opiniones y mucho más. ¡Contáctalos desde aquí!</p>
+                    <a href="#" class="btn">Busca espacios</a>
+                </div>
+            </div>
+            <div class="organize-card">
+                <img src="{% static 'images/Foto6.jpeg' %}" alt="Proveedores">
+                <div class="card-content">
+                    <h3>Proveedores</h3>
+                    <p>Encuentra a los mejores profesionales de nuestro equipo para tus necesidades.</p>
+                    <a href="#" class="btn">Empieza tu selección</a>
+                </div>
+            </div>
+            <div class="organize-card">
+                <img src="{% static 'images/Foto5.jpeg' %}" alt="Proveedores">
+                <div class="card-content">
+                    <h3>Proveedores</h3>
+                    <p>Encuentra a los mejores profesionales de nuestro equipo para tus necesidades.</p>
+                    <a href="#" class="btn">Empieza tu selección</a>
+                </div>
+            </div>
+            <div class="organize-card">
+                <img src="{% static 'images/Foto1.jpeg' %}" alt="Proveedores">
+                <div class="card-content">
+                    <h3>Proveedores</h3>
+                    <p>Encuentra a los mejores profesionales de nuestro equipo para tus necesidades.</p>
+                    <a href="#" class="btn">Empieza tu selección</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="features">
+        <div class="feature">
+            <img src="{% static 'images/Foto3.jpeg' %}" alt="Web de matrimonio">
+            <h3>Tu nube de eventos gratis</h3>
+            <p>Comparte los detalles del gran día con tus invitados con una nube 100% personalizada.</p>
+        </div>
+        <div class="feature">
+            <img src="{% static 'images/Foto2.jpeg' %}" alt="Inspiración">
+            <h3>Toda la inspiración</h3>
+            <p>Tendencias, ideas, novedades... ¡encuentra la inspiración e ideas para tu evento!</p>
+        </div>
+        <div class="feature">
+            <img src="{% static 'images/Foto6.jpeg' %}" alt="Planificación">
+            <h3>Menú de planificación</h3>
+            <p>Todo en orden con las herramientas gratuitas de planificación.</p>
+        </div>
+    </section>
+</body>
+</main>
+</html>
+{% endblock %}

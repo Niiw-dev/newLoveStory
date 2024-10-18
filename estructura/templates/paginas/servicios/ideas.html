@@ -1,0 +1,38 @@
+{% extends "header_footer.html" %}
+{% block titulo %}Novios{% endblock %}
+{% load static %}
+{% block contenido %}
+<div class="container">
+    <h1 class="main-title">Ideas Fotográficas</h1>
+    
+    <div class="event-display">
+        <div class="carousel">
+            <div class="carousel-container">
+                <!-- Las imágenes se insertarán aquí con JavaScript -->
+            </div>
+            <button class="carousel-button prev">&lt;</button>
+            <button class="carousel-button next">&gt;</button>
+        </div>
+        
+        <div class="event-details">
+            <h2 id="event-title"></h2>
+            <p id="event-description"></p>
+            <div class="event-info">
+                <span id="event-date"></span>
+                <span id="event-location"></span>
+            </div>
+            <button class="details-button">Ver más detalles</button>
+        </div>
+    </div>
+    
+    <div class="other-events">
+        <h2>Otros Eventos</h2>
+        <div class="event-grid">
+            <!-- Las tarjetas de eventos se insertarán aquí con JavaScript -->
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/ideas.css' %}">
+<script src="{% static 'js/ideas.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Love Story{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/header_footer.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/accesibilidad.css' %}">
+</head>
+<body>
+    <div id="ayuda-preguntas">
+        <a href="/ruta/al/archivo.pdf" target="_blank">
+        <button class="btn-ayuda">
+            <img src="{% static 'images/Ayuda.png' %}"  alt="Ayuda">
+        </button>
+    </div>
+    <div id="accessibility-button" class="accessibility-button">
+        <i class="fa fa-universal-access"></i>
+    </div>
+    <div id="accessibility-menu" class="accessibility-menu">
+        <button id="toggle-dark-mode" onclick="toggleDarkMode()">Modo Oscuro/Claro</button>
+        <button id="increase-font-size" onclick="increaseFontSize()">Aumentar Tamaño de Letra</button>
+        <button id="decrease-font-size" onclick="decreaseFontSize()">Disminuir Tamaño de Letra</button>
+        <button id="translate-button" onclick="translateContent()">Traducir</button>
+    </div>
+    <header class="main-header">
+        <div class="logo">
+            <img src="{% static 'images/logo3.png' %}" alt="Logo">
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <div class="emoji-button-container">
+                    <button class="emoji-button"><a href="{% url 'inicio' %}">LoveStory</a></button>
+                    <div class="emoji-animations">
+                      <span class="emoji">🎥</span>
+                      <span class="emoji">🎞️</span>
+                      <span class="emoji">📽️</span>
+                      <span class="emoji">📷</span>
+                    </div>
+                  </div>
+                <li class="has-submenu">
+                    <a href="">SERVICIOS</a>
+                    <ul class="submenu">
+                        <li><a href="{% url 'reservas' %}"><i class="fas fa-calendar"></i>Reservas</a></li>
+                        <li><a href="{% url 'paquetes' %}"><i class="fas fa-box"></i>Nuestros Paquetes</a></li>
+                    </ul>
+                </li>
+                <li class="has-submenu">
+                  <a href="{% url 'acerca_de_nosotros' %}">ACERCA DE NOSOTROS</a>
+                </li>
+                <li class="has-submenu">
+                    <a href="#">IDEAS</a>
+                    <ul class="submenu">
+                        <li><a href="{% url 'ideas' %}">Haciendas para bodas</a></li>
+                        <li><a href="#">Hoteles para bodas</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+            <a href="{% url 'login' %}" class="accede">ACCEDE</a>
+            <a href="{% url 'registrate' %}" class="registrate">REGÍSTRATE</a>
+            <div class="user-menu-container">
+                <button class="user-button">
+                    <img src="{% static 'images/User.png' %}" alt="User Icon">
+                </button>
+                <div class="user-menu">
+                    <a href="{% url 'perfil_usuario' %}">Perfil</a>
+                    <a href="#">Configuración</a>
+                    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="header-overlay"></div>
+
+    <main>
+        {% block contenido %}
+        
+        {% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Información</h3>
+                <ul>
+                    <li><a href="#">Contactar</a></li>
+                    <li><a href="#">Condiciones legales</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Política de cookies</a></li>
+                    <li><a href="#">Configuración de cookies</a></li>
+                    <li><a href="#">Alta empresas</a></li>
+                    <li><a href="#">¿Quiénes somos?</a></li>
+                    <li><a href="#">Equipo editorial</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Wedding Awards 2024</a></li>
+                    <li><a href="#">Web de matrimonio</a></li>
+                </ul>
+            </div>
+            <div class="footer-column"></div>
+            <div class="footer-column"></div>
+
+        <div class="footer-column">
+            <div class="social-follow">
+                <h3>Síguenos en</h3>
+                <div class="redes-sociales">
+                   <a href="https://www.instagram.com/lovestoryoa?igsh=MTk1Y3Fsa2kyNnN5Zg==" target="_blank"><i class="fab fa-instagram"></i></a>
+                   <a href="https://www.facebook.com/lovestoryoaphoto?mibextid=ZbWKwL" target="_blank"><i class="fab fa-facebook"></i></a>
+                   <a href="https://wa.link/r5lskb" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-bottom">
+        <img src="{% static 'images/Logo2.png' %}" alt="TKWW Logo">
+        <p>© 2024 LoveStory.com.co</p>
+    </div>
+</footer>
+    <script src="{% static 'js/accesibilidad.js' %}"></script>
+    <script src="{% static 'js/header_footer.js' %}"></script>
+    <script src="https://kit.fontawesome.com/713b131395.js" crossorigin="anonymous"></script>
+</body>
+</html>

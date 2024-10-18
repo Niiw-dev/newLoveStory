@@ -1,0 +1,101 @@
+
+{% block titulo %}{% endblock %}
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/registrate.css' %}">
+</head>
+<body>
+    <a href="{% url 'inicio' %}" class="back-button"><i class="fas fa-arrow-left"></i></a>
+    <div class="container">
+        <div class="left-section">
+            <h1></h1>
+            <p></p>
+        </div>
+        <div class="right-section">
+            <div class="social-buttons">
+                <button class="social-button facebook"><i class="fab fa-facebook-f"></i>Continúa con Facebook</button>
+                <button class="social-button google"><i class="fab fa-google"></i>Continúa con Google</button>
+                <button class="social-button apple"><i class="fab fa-apple"></i>Continúa con Apple</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="error-summary">
+                        <p>Por favor, corrige los siguientes errores:</p>
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            
+                <div class="form-group">
+                    <label for="{{ form.nombre.id_for_label }}">Nombre</label>
+                    {{ form.nombre.errors }}
+                    {{ form.nombre }}
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.apellido.id_for_label }}">Apellidos</label>
+                    {{ form.apellido.errors }}
+                    {{ form.apellido }}
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email</label>
+                    {{ form.email.errors }}
+                    {{ form.email }}
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
+                    {{ form.username.errors }}
+                    {{ form.username }}
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">Contraseña</label>
+                    {{ form.password1.errors }}
+                    {{ form.password1 }}
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">Confirmar Contraseña</label>
+                    {{ form.password2.errors }}
+                    {{ form.password2 }}
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
+                    {{ form.telefono.errors }}
+                    {{ form.telefono }}
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.direccion.id_for_label }}">Dirección</label>
+                    {{ form.direccion.errors }}
+                    {{ form.direccion }}
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">He leído y acepto las <a href="#">condiciones de uso</a> y de <a href="#">Privacidad</a></label>
+                </div>
+                <button type="submit" class="submit-button">Registrarme</button>
+            </form>
+            <p>¿Ya tienes cuenta? <a href="#">Acceder</a></p>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

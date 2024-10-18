@@ -1,0 +1,206 @@
+/* static/css/styles.css */
+
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    
+}
+
+.container {
+    display: flex;
+    max-width: 1300px; /* Reducido ligeramente para mantener el diseño compacto */
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 10px;
+}
+
+.left-section, .right-section {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-section {
+    padding: 20px;
+    flex: 1;
+    background-image: url("../images/Foto 14.jpeg");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+}
+
+.right-section {
+    padding: 20px; /* Reducir padding para la sección derecha */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.social-buttons {
+    margin-bottom: 30px;
+}
+
+.social-button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 10px;
+}
+
+.social-button i {
+    margin-right: 10px;
+}
+
+.facebook { background-color: white; color: #a8dee2; border-color: #a8dee2; }
+.google { background-color: white; color: #ffd69f; border-color: #ffd69f; }
+.apple { background-color: white; color: #a8dee2; border-color: #a8dee2; }
+
+.social-button:hover {
+    background-color: #f0f0f0;
+}
+
+
+form {
+    width: 100%;
+    max-width: 530px; /* Reducido para mantener el formulario más compacto */
+    margin: 0 auto;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 15px; /* Reducido ligeramente del ajuste anterior */
+}
+
+
+.form-group label {
+    margin-bottom: 6px; /* Ajustado para un espaciado más sutil */
+    font-weight: bold;
+    font-size: 0.9em; /* Reducido ligeramente el tamaño de la fuente */
+}
+
+.form-group input, .form-group select {
+    padding: 8px 10px; /* Reducido el padding vertical */
+    border: none;
+    border-bottom: 1px solid #ffd69f;
+    border-radius: 0;
+    outline: none;
+    background-color: transparent;
+    transition: border-color 0.3s;
+    font-size: 0.9em; /* Reducido ligeramente el tamaño de la fuente */
+}
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    padding-right: 30px;
+}
+
+.form-group i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.radio-group {
+    display: flex;
+    gap: 10px;
+}
+
+.radio-group input {
+    margin-right: 5px;
+}
+
+.submit-button {
+    padding: 12px;
+    background-color: #a8dee2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px; /* Reducido ligeramente */
+    cursor: pointer;
+    width: 80%; /* Ajustado para que se adapte mejor al contenedor */
+    max-width: 200px;
+    margin: 20px auto 10px; /* Ajustado el margen */
+    display: block;
+}
+
+.submit-button:hover {
+    background-color: #ffd69f;
+}
+
+p {
+    margin-top: 20px;
+    text-align: center;
+}
+
+p a {
+    color: #ffd69f;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px; /* Ajusta el tamaño del icono */
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    background-color: hsl(0, 0%, 0%);
+    width: 30px; /* Ajusta el ancho del botón */
+    height: 30px; /* Ajusta la altura del botón */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #ffd69f;
+}
+
+.terms-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.terms-checkbox input[type="checkbox"] {
+    margin: 0;
+}
