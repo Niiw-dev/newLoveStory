@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import time, date
+from django.core.exceptions import ValidationError
 
 class Servicio(models.Model):
     tipo_de_servicio = models.CharField(max_length=50)
@@ -29,14 +31,48 @@ class Cliente(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 class Reserva(models.Model):
-    fecha_reserva = models.DateTimeField()
-    estado = models.BooleanField(default=True)
+    TIPO_EVENTO_CHOICES = [
+        ('boda', 'Boda'),
+        ('quince', 'Quinceañera'),
+        ('bautizo', 'Bautizo'),
+        ('comunion', 'Primera Comunión'),
+        ('graduacion', 'Graduación'),
+        ('cumpleanos', 'Cumpleaños'),
+        ('empresarial', 'Evento Empresarial'),
+        ('otros', 'Otros'),
+    ]
+    
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
+    paquete = models.ForeignKey(Paquete, on_delete=models.CASCADE)
+    tipo_evento = models.CharField(max_length=20, choices=TIPO_EVENTO_CHOICES)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    estado = models.CharField(max_length=20, choices=[
+        ('pendiente', 'Pendiente'),
+        ('confirmada', 'Confirmada'),
+        ('cancelada', 'Cancelada'),
+    ], default='pendiente')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    
+    def clean(self):
+        # Validar que no haya más de 3 reservas confirmadas para la misma fecha
+        if self.fecha:
+            reservas_del_dia = Reserva.objects.filter(
+                fecha=self.fecha,
+                estado__in=['pendiente', 'confirmada']
+            ).exclude(id=self.id if self.id else None)
+            
+            if reservas_del_dia.count() >= 3:
+                raise ValidationError('Ya existen 3 reservas para esta fecha. Por favor selecciona otra fecha.')
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Reserva {self.id} - {self.cliente}"
+        return f"Reserva {self.id} - {self.cliente} - {self.fecha}"
 
+# Tus otros modelos permanecen igual...
 class Venta(models.Model):
     fecha_venta = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -53,7 +89,7 @@ class Foto(models.Model):
 
     def __str__(self):
         return self.descripcion
-    
+
 class EventoFotografico(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()

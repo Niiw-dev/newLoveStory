@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Cliente, Reserva, Venta
+from .models import Cliente, Reserva, Venta, Paquete
+import datetime
 
 class UserForm(UserCreationForm):
     class Meta:
@@ -34,10 +35,21 @@ class ClienteRegistrationForm(UserCreationForm):
             )
         return user
 
+
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-        fields = ['fecha_reserva', 'servicio']
+        fields = ['paquete', 'tipo_evento', 'fecha', 'hora']
+        widgets = {
+            'fecha': forms.DateInput(attrs={'type': 'date', 'min': datetime.date.today().isoformat()}),
+            'hora': forms.TimeInput(attrs={'type': 'time'}),
+        }
+        labels = {
+            'paquete': 'Selecciona un paquete',
+            'tipo_evento': 'Tipo de evento',
+            'fecha': 'Fecha del evento',
+            'hora': 'Hora del evento',
+        }
 
 class VentaForm(forms.ModelForm):
     class Meta:

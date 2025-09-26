@@ -59,7 +59,7 @@ ROOT_URLCONF = 'sistema.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'estructura', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,3 +137,12 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Configuración para enviar correos (usando Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sergioloelcrakdiolo@gmail.com'  # Reemplaza con tu correo
+EMAIL_HOST_PASSWORD = 'mytrkrdytkztbiwp'  # No uses la clave normal, usa una contraseña de aplicación
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

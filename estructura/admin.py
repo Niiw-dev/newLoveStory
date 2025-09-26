@@ -1,7 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
-from django.contrib import admin
 from .models import Paquete, Reserva, Cliente, Servicio
 
 @admin.register(Paquete)
@@ -10,7 +7,9 @@ class PaqueteAdmin(admin.ModelAdmin):
 
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ('fecha_reserva', 'estado', 'cliente', 'servicio')
+    list_display = ('fecha', 'hora', 'cliente', 'tipo_evento', 'paquete', 'estado')
+    list_filter = ('estado', 'tipo_evento', 'fecha')
+    search_fields = ('cliente__nombre', 'cliente__apellido')
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):

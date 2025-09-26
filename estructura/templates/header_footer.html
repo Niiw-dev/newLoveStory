@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{% static 'css/header_footer.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/accesibilidad.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cookiebaner.css' %}">
+    
 </head>
 <body>
     <div id="ayuda-preguntas">
@@ -124,5 +126,47 @@
     <script src="{% static 'js/accesibilidad.js' %}"></script>
     <script src="{% static 'js/header_footer.js' %}"></script>
     <script src="https://kit.fontawesome.com/713b131395.js" crossorigin="anonymous"></script>
+    
+    <!-- Anuncio de Política de Cookies (centrado) -->
+<div id="cookie-banner" class="cookie-banner">
+    <div class="cookie-content">
+        <h3>Política de Cookies</h3>
+        <p>Este sitio web utiliza cookies para mejorar tu experiencia de navegación. Al hacer clic en "Aceptar", consientes el uso de todas las cookies.</p>
+        <p>Puedes visitar nuestra <a href="/politica-privacidad/">Política de Privacidad</a> para más información.</p>
+        <div class="cookie-buttons">
+            <button id="cookie-accept" class="cookie-button accept">Aceptar</button>
+            <button id="cookie-settings" class="cookie-button settings">Configuración</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Configuración de Cookies -->
+<div id="cookie-settings-modal" class="cookie-modal">
+    <div class="cookie-modal-content">
+        <span class="cookie-close">&times;</span>
+        <h3>Configuración de Cookies</h3>
+        <div class="cookie-options">
+            <div class="cookie-option">
+                <input type="checkbox" id="essential-cookies" checked disabled>
+                <label for="essential-cookies">Cookies Esenciales (Obligatorias)</label>
+                <p>Estas cookies son necesarias para el funcionamiento básico del sitio web.</p>
+            </div>
+            <div class="cookie-option">
+                <input type="checkbox" id="analytics-cookies" checked>
+                <label for="analytics-cookies">Cookies Analíticas</label>
+                <p>Nos ayudan a entender cómo interactúas con el sitio web, mejorando su funcionamiento.</p>
+            </div>
+            <div class="cookie-option">
+                <input type="checkbox" id="marketing-cookies" checked>
+                <label for="marketing-cookies">Cookies de Marketing</label>
+                <p>Utilizadas para rastrear a los visitantes en los sitios web con el fin de mostrar anuncios relevantes.</p>
+            </div>
+        </div>
+        <button id="save-preferences" class="cookie-button accept">Guardar Preferencias</button>
+    </div>
+</div>
+
+    <script src="{% static 'js/cookie-banner.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

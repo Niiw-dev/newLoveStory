@@ -1,51 +1,35 @@
-{% extends "header_footer.html" %}
-{% block titulo %} Reservas {% endblock %}
+{% extends 'header_footer.html' %}
 {% load static %}
-{% block contenido %}
-<div class="reservas-container">
-    <div class="contenido-reserva">
-        <!-- Imagen al lado del calendario -->
-        <div class="imagen-reserva">
-            <img id="imagen-mes" src="{% static 'images/default.jpg' %}" alt="Imagen del mes">
-            <p class="frase-motivacional">"Capturando momentos que durarán para siempre."</p>
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Haz tu Reserva</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            {{ form.paquete.label_tag }}<br>
+            {{ form.paquete }}
         </div>
-        
-        <!-- Calendario y formulario al otro lado -->
-        <div class="calendario-reserva">
-            <div id="calendario"></div>
-            <div id="formulario-reserva" style="display: none;">
-                <h2>Hacer reserva para <span id="fecha-seleccionada"></span></h2>
-                
-                <!-- Selección del servicio o paquete -->
-                <select id="servicio">
-                    <option value="">Selecciona un servicio o paquete</option>
-                    {% for servicio in servicios %}
-                        <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
-                    {% endfor %}
-                </select>
-                
-                <!-- Selección del tipo de evento (de 8 o 11 horas) -->
-                <select id="tipo-evento" disabled>
-                    <option value="">Selecciona tipo de evento</option>
-                    <option value="8">Evento de 8 horas</option>
-                    <option value="11">Evento de 11 horas</option>
-                </select>
-                
-                <!-- Selección de la hora, basada en el tipo de evento -->
-                <select id="hora" disabled>
-                    <option value="">Selecciona una hora</option>
-                    <!-- Opciones se llenarán dinámicamente en JavaScript -->
-                </select>
-                
-                <button id="boton-reserva" disabled>Confirmar Reserva</button>
-            </div>
+        <div class="form-group mb-3">
+            {{ form.tipo_evento.label_tag }}<br>
+            {{ form.tipo_evento }}
         </div>
-    </div>
+        <div class="form-group mb-3">
+            {{ form.fecha.label_tag }}<br>
+            {{ form.fecha }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.hora.label_tag }}<br>
+            {{ form.hora }}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar reserva</button>
+    </form>
 </div>
-
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
-<script src="{% static 'js/reservas.js' %}"></script>
-<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
 {% endblock %}
-

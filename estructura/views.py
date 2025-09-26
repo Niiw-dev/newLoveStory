@@ -1,22 +1,18 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import ClienteRegistrationForm
-from .forms import ClienteUpdateForm
+from django.core.mail import send_mail
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-from .models import Reserva, Cliente, Servicio, Paquete
+from datetime import datetime
+from django.contrib.auth import authenticate, login, logout
 import json
-from datetime import datetime, time
-from .models import EventoFotografico
+from datetime import date
+from .models import Cliente, Paquete, Reserva, Servicio
+from .forms import ClienteRegistrationForm, ClienteUpdateForm, ReservaForm
 
 
-def paquetes(request):
-    return render(request, 'paginas/servicios/paquetes.html')
-
-# Vista para la página "Acerca de Nosotros"
 def acerca_de_nosotros(request):
     return render(request, 'paginas/nosotros/acerca_de_nosotros.html')
 
@@ -24,12 +20,27 @@ def acerca_de_nosotros(request):
 def inicio(request):
     return render(request, 'paginas/inicio/inicio.html')
 
-# Vista para las reservas
-@login_required(login_url='/login/')
-def reservas(request):
-    return render(request, 'paginas/servicios/reservas.html')
+# Vista para paquetes
+def paquetes(request):
+    return render(request, 'paginas/servicios/paquetes.html')
 
-# Vista de inicio de sesión
+# Vista para ideas
+def ideas(request):
+    return render(request, 'paginas/servicios/ideas.html')
+
+# Vista de registro de usuarios
+def register(request):
+    if request.method == 'POST':
+        form = ClienteRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('inicio')
+    else:
+        form = ClienteRegistrationForm()
+    return render(request, 'registrate.html', {'form': form})
+
+# Vista de login personalizada (opcional, puedes usar LoginView también)
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -37,55 +48,32 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('reservas')  # Redirige a la página de reservas después de iniciar sesión
+            return redirect('reservas')
         else:
-            # Mensaje de error si las credenciales no son correctas
             messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
 
-    # Mensaje de advertencia si el usuario fue redirigido a la página de inicio de sesión
     if not request.user.is_authenticated:
         messages.warning(request, 'Debes iniciar sesión para hacer una reserva.')
-
     return render(request, 'login.html')
 
-# Vista para la página de registro
-
-def ideas(request):
-    return render(request, 'paginas/servicios/ideas.html')
-
-def register(request):
-    if request.method == 'POST':
-        form = ClienteRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('/')
-    else:
-        form = ClienteRegistrationForm()
-    return render(request, 'registrate.html', {'form': form})
-
+# Vista de logout
 def logout_view(request):
     logout(request)
     return render(request, 'logout.html')
 
+# Vista del perfil del usuario
 @login_required
 def perfil_usuario(request):
-    """
-    Vista para mostrar y actualizar el perfil del usuario.
-    """
     try:
-        # Obtener el cliente asociado al usuario actual
         cliente = request.user.cliente
-        user = request.user  # El usuario actualmente autenticado
-    except cliente.DoesNotExist:
+        user = request.user
+    except Cliente.DoesNotExist:
         return redirect('registrate')
 
     if request.method == 'POST':
         form = ClienteUpdateForm(request.POST, instance=cliente)
         if form.is_valid():
-            # Guardar los cambios en los campos del cliente
             cliente = form.save(commit=False)
-            # Verificar si se ha cambiado el username
             nuevo_username = form.cleaned_data.get('username')
             if nuevo_username and nuevo_username != user.username:
                 user.username = nuevo_username
@@ -102,61 +90,102 @@ def perfil_usuario(request):
         'form': form
     }
     return render(request, 'perfil_usuario.html', context)
-def pagina_reservas(request):
-    servicios = Servicio.objects.all()
-    horas_disponibles = [time(hour=h).strftime("%H:%M") for h in range(9, 21)]
-    return render(request, 'reservas.html', {
-        'servicios': servicios,
-        'horas_disponibles': horas_disponibles
-    })
 
-@csrf_exempt
-def hacer_reserva(request):
+@login_required
+def crear_reserva(request):
+    try:
+        cliente = request.user.cliente
+    except Cliente.DoesNotExist:
+        messages.error(request, 'Debes tener un perfil de cliente para hacer una reserva.')
+        return redirect('perfil_usuario')  # Ajusta el nombre según tu vista de perfil
+
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            fecha_hora = datetime.strptime(f"{data['fecha']} {data['hora']}", "%Y-%m-%d %H:%M")
-            
-            # Verificar si el cliente está autenticado
-            if not request.user.is_authenticated:
-                return JsonResponse({'error': 'Debes iniciar sesión para hacer una reserva'}, status=401)
+        form = ReservaForm(request.POST)
+        if form.is_valid():
+            reserva = form.save(commit=False)
+            reserva.cliente = cliente
+            reserva.save()
+            messages.success(request, 'Tu reserva ha sido creada exitosamente.')
+            return redirect('mis_reservas')  # O donde quieras redirigir
+        else:
+            messages.error(request, 'Hubo un error al crear la reserva.')
+    else:
+        form = ReservaForm()
 
-            # Obtener el cliente autenticado
-            cliente = request.user.cliente
-            
-            # Obtener el servicio a partir del ID
-            servicio_id = data.get('servicio')
-            try:
-                servicio = Servicio.objects.get(id=servicio_id)
-            except Servicio.DoesNotExist:
-                return JsonResponse({'error': 'Servicio no encontrado'}, status=404)
+    return render(request, 'paginas/servicios/reservas.html', {'form': form})
 
-            # Verificar si ya existe una reserva para esa fecha, hora y servicio
-            if Reserva.objects.filter(fecha_reserva=fecha_hora, servicio=servicio).exists():
-                return JsonResponse({'error': 'Ya existe una reserva para esta fecha, hora y servicio'}, status=400)
-
-            # Crear nueva reserva
-            nueva_reserva = Reserva.objects.create(
-                fecha_reserva=fecha_hora,
-                cliente=cliente,
-                servicio=servicio
-            )
-
-            return JsonResponse({'mensaje': 'Reserva creada con éxito'}, status=201)
-
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos inválidos'}, status=400)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+# API para paquetes
+def obtener_paquetes(request):
+    paquetes = Paquete.objects.all()
+    data = [{'id': p.id, 'nombre_paquete': p.nombre_paquete} for p in paquetes]
+    return JsonResponse(data, safe=False)
 
 
+
+# API para horas
+@require_GET
+def horas_disponibles(request):
+    fecha = request.GET.get('fecha')
+    if not fecha:
+        return JsonResponse({'error': 'Fecha no proporcionada'}, status=400)
+
+    # Aquí se puede hacer validación real de disponibilidad
+    horas_disponibles = [f"{h}:00" for h in range(9, 21)]
+    return JsonResponse({'horas_disponibles': horas_disponibles})
+
+
+# API para pintar eventos en el calendario
 def obtener_reservas(request):
     reservas = Reserva.objects.all()
-    eventos = [{
-        'title': f"{reserva.servicio.tipo_de_servicio} - {reserva.cliente.nombre}",
-        'start': reserva.fecha_reserva.isoformat(),
-        'extendedProps': {
-            'estado': reserva.estado
-        }
-    } for reserva in reservas]
+    eventos = []
+
+    for r in reservas:
+        eventos.append({
+            'title': f"{r.tipo_evento} - {r.cliente.nombre}",
+            'start': f"{r.fecha_reserva.date()}T{r.hora.strftime('%H:%M:%S')}",
+            'color': '#ffc107',  # amarillo
+        })
+
     return JsonResponse(eventos, safe=False)
+
+
+# API para guardar la reserva (desde JS)
+@csrf_exempt
+@login_required
+def guardar_reserva_ajax(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        paquete_id = data.get('paquete')
+        tipo_evento = data.get('tipo_evento')
+        hora = data.get('hora')
+        fecha = data.get('fecha')
+
+        if not all([paquete_id, tipo_evento, hora, fecha]):
+            return JsonResponse({'mensaje': 'Faltan datos'}, status=400)
+
+        if Reserva.objects.filter(fecha=fecha).count() >= 3:
+            return JsonResponse({'mensaje': 'Ya hay 3 reservas para esta fecha'}, status=400)
+
+        if Reserva.objects.filter(fecha=fecha, hora=hora).exists():
+            return JsonResponse({'mensaje': 'Ya hay una reserva a esa hora'}, status=400)
+
+        paquete = Paquete.objects.get(pk=paquete_id)
+        reserva = Reserva.objects.create(
+            cliente=request.user.cliente,
+            paquete=paquete,
+            tipo_evento=tipo_evento,
+            hora=hora,
+            fecha=fecha
+        )
+
+        # Enviar correo
+        send_mail(
+            'Confirmación de tu reserva',
+            f'Reserva confirmada para el {fecha} a las {hora}',
+            'tupagina@dominio.com',
+            [request.user.email, 'admin@tuweb.com']
+        )
+
+        return JsonResponse({'mensaje': 'Reserva guardada correctamente'})
 
