@@ -1,0 +1,6 @@
+django
+pymysql
+pillow
+mysql
+mysqlclient
+cryptography
