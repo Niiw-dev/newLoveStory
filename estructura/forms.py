@@ -40,28 +40,27 @@ class ClienteRegistrationForm(UserCreationForm):
 
 
 class ReservaForm(forms.ModelForm):
+    # Campos extra solo si el usuario NO está logueado
+    nombre = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    apellido = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    telefono = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    direccion = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Reserva
-        fields = ['fecha', 'hora', 'cliente_nombre', 'cliente_email', 'paquete', 'servicio']
+        fields = ['fecha', 'hora', 'paquete', 'servicio']
         widgets = {
-            'fecha': forms.DateInput(
-                attrs={
-                    'type': 'date',
-                    'class': 'form-control',
-                    'min': date.today().isoformat(),
-                }
-            ),
+            'fecha': forms.HiddenInput(),
             'hora': forms.TimeInput(
                 attrs={
                     'type': 'time',
                     'class': 'form-control',
                     'min': time(8,0).strftime('%H:%M'),
                     'max': time(16,0).strftime('%H:%M'),
-                    'step': 1800,
+                    'step': 60,
                 }
             ),
-            'cliente_nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'cliente_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'paquete': forms.Select(attrs={'class': 'form-select'}),
             'servicio': forms.Select(attrs={'class': 'form-select'}),
         }

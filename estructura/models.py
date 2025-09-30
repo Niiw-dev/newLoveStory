@@ -48,8 +48,7 @@ class Reserva(models.Model):
     hora = models.TimeField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=10, choices=ESTADOS, default='pendiente')
-    cliente_nombre = models.CharField(max_length=100, default='Individuo1')
-    cliente_email = models.EmailField(default='correo@ejemplo.com')
+    cliente = models.ForeignKey("Cliente", on_delete=models.CASCADE, default=1)
     paquete = models.ForeignKey('Paquete', on_delete=models.CASCADE)
     servicio = models.ForeignKey('Servicio', on_delete=models.CASCADE, default=1)
 
@@ -63,7 +62,7 @@ class Reserva(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.cliente_nombre} - {self.fecha} {self.hora} ({self.estado})"
+        return f"{self.cliente.nombre} - {self.fecha} {self.hora} ({self.estado})"
 
 
 # Tus otros modelos permanecen igual...

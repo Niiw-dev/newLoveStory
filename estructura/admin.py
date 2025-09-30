@@ -7,9 +7,9 @@ class PaqueteAdmin(admin.ModelAdmin):
 
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ('fecha', 'hora', 'cliente_nombre', 'estado', 'paquete', 'servicio')
+    list_display = ('fecha', 'hora', 'cliente', 'estado', 'paquete', 'servicio')
     list_filter = ('fecha', 'estado', 'paquete', 'servicio')
-    search_fields = ('cliente_nombre', 'cliente_email')
+    search_fields = ('cliente', 'cliente_email')
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):

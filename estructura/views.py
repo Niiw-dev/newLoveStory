@@ -13,6 +13,7 @@ import json
 from datetime import date
 from .models import Cliente, Paquete, Reserva, Servicio
 from .forms import ClienteRegistrationForm, ClienteUpdateForm, ReservaForm
+from django.utils.safestring import mark_safe
 
 
 def acerca_de_nosotros(request):
@@ -93,21 +94,45 @@ def perfil_usuario(request):
     }
     return render(request, 'perfil_usuario.html', context)
 
-def fechas_disponibles(dias=30):
-    hoy = date.today()
-    disponibles = {}
-    for i in range(dias):
-        dia = hoy + timedelta(days=i)
-        num_reservas = Reserva.objects.filter(fecha=dia).count()
-        disponibles[dia] = num_reservas < 3
-    return disponibles
-
 def agendar_reserva(request):
     if request.method == "POST":
         form = ReservaForm(request.POST)
         if form.is_valid():
-            form.save()  # ✅ guarda la reserva
-            return redirect('reserva_exitosa')
+            reserva = form.save(commit=False)
+
+            if request.user.is_authenticated:
+                # Cliente ya existe
+                reserva.cliente = request.user.cliente
+            else:
+                # Crear un nuevo usuario y cliente
+                nombre = form.cleaned_data.get("nombre")
+                apellido = form.cleaned_data.get("apellido")
+                email = form.cleaned_data.get("email")
+                telefono = form.cleaned_data.get("telefono")
+                direccion = form.cleaned_data.get("direccion")
+
+                if not (nombre and apellido and email):
+                    form.add_error(None, "Debes ingresar todos los datos de cliente.")
+                    return render(request, "reserva_form.html", {"form": form})
+
+                # Crear usuario automáticamente
+                user = User.objects.create_user(
+                    username=email,  # username = email
+                    email=email,
+                    password=User.objects.make_random_password()
+                )
+                cliente = Cliente.objects.create(
+                    user=user,
+                    nombre=nombre,
+                    apellido=apellido,
+                    email=email,
+                    telefono=telefono,
+                    direccion=direccion
+                )
+                reserva.cliente = cliente
+
+            reserva.save()
+            return redirect("reserva_exitosa")
     else:
         form = ReservaForm()
 
@@ -119,17 +144,16 @@ def agendar_reserva(request):
     dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d.month == mes_actual]
 
     # Contar reservas por día
-    reservas = Reserva.objects.all()
-    dias_ocupados = {d: False for d in dias_mes}
+    dias_ocupados = []
     for d in dias_mes:
         if Reserva.objects.filter(fecha=d).count() >= 3:
-            dias_ocupados[d] = True
+            dias_ocupados.append(d.strftime("%Y-%m-%d"))
 
-    return render(request, 'reserva_form.html', {
-        'form': form,
-        'dias_ocupados': dias_ocupados,
-        'mes_actual': mes_actual,
-        'año_actual': año_actual
+    return render(request, "reserva_form.html", {
+        "form": form,
+        "dias_ocupados": mark_safe(json.dumps(dias_ocupados)),  # ✅ lista en JSON
+        "mes_actual": mes_actual,
+        "año_actual": año_actual
     })
 
 def reserva_exitosa(request):
