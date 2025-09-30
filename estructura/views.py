@@ -1,3 +1,5 @@
+import calendar
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -91,28 +93,48 @@ def perfil_usuario(request):
     }
     return render(request, 'perfil_usuario.html', context)
 
-@login_required
-def crear_reserva(request):
-    try:
-        cliente = request.user.cliente
-    except Cliente.DoesNotExist:
-        messages.error(request, 'Debes tener un perfil de cliente para hacer una reserva.')
-        return redirect('perfil_usuario')  # Ajusta el nombre según tu vista de perfil
+def fechas_disponibles(dias=30):
+    hoy = date.today()
+    disponibles = {}
+    for i in range(dias):
+        dia = hoy + timedelta(days=i)
+        num_reservas = Reserva.objects.filter(fecha=dia).count()
+        disponibles[dia] = num_reservas < 3
+    return disponibles
 
-    if request.method == 'POST':
+def agendar_reserva(request):
+    if request.method == "POST":
         form = ReservaForm(request.POST)
         if form.is_valid():
-            reserva = form.save(commit=False)
-            reserva.cliente = cliente
-            reserva.save()
-            messages.success(request, 'Tu reserva ha sido creada exitosamente.')
-            return redirect('mis_reservas')  # O donde quieras redirigir
-        else:
-            messages.error(request, 'Hubo un error al crear la reserva.')
+            form.save()  # ✅ guarda la reserva
+            return redirect('reserva_exitosa')
     else:
         form = ReservaForm()
 
-    return render(request, 'paginas/servicios/reservas.html', {'form': form})
+    # Generar calendario del mes actual
+    hoy = date.today()
+    mes_actual = hoy.month
+    año_actual = hoy.year
+    cal = calendar.Calendar()
+    dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d.month == mes_actual]
+
+    # Contar reservas por día
+    reservas = Reserva.objects.all()
+    dias_ocupados = {d: False for d in dias_mes}
+    for d in dias_mes:
+        if Reserva.objects.filter(fecha=d).count() >= 3:
+            dias_ocupados[d] = True
+
+    return render(request, 'reserva_form.html', {
+        'form': form,
+        'dias_ocupados': dias_ocupados,
+        'mes_actual': mes_actual,
+        'año_actual': año_actual
+    })
+
+def reserva_exitosa(request):
+    return render(request, 'reserva_exitosa.html')
+
 
 # API para paquetes
 def obtener_paquetes(request):

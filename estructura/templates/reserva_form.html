@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendar Reserva</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .day { padding: 10px; border: 1px solid #ccc; text-align: center; cursor: pointer; }
+        .day.ocupado { background-color: #f8d7da; color: #721c24; cursor: not-allowed; }
+        .day.seleccionado { background-color: #d1e7dd; color: #0f5132; }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h1 class="mb-4">Agendar Reserva</h1>
+
+    <!-- Calendario -->
+    <div class="calendar mb-4">
+        {% for dia, ocupado in dias_ocupados.items %}
+            <div class="day {% if ocupado %}ocupado{% endif %}" data-fecha="{{ dia }}">
+                {{ dia.day }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Formulario -->
+    <form method="post" class="bg-white p-4 shadow rounded">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Agendar</button>
+    </form>
+</div>
+
+<script>
+    const dias = document.querySelectorAll('.day');
+    const fechaInput = document.querySelector('input[type="date"]');
+
+    dias.forEach(dia => {
+        if(!dia.classList.contains('ocupado')){
+            dia.addEventListener('click', function() {
+                // limpiar selección previa
+                dias.forEach(d => d.classList.remove('seleccionado'));
+                this.classList.add('seleccionado');
+                fechaInput.value = this.dataset.fecha;
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from datetime import date, time
+
 from .models import Cliente, Reserva, Venta, Paquete
 import datetime
 
@@ -39,17 +42,41 @@ class ClienteRegistrationForm(UserCreationForm):
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-        fields = ['paquete', 'tipo_evento', 'fecha', 'hora']
+        fields = ['fecha', 'hora', 'cliente_nombre', 'cliente_email', 'paquete', 'servicio']
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'date', 'min': datetime.date.today().isoformat()}),
-            'hora': forms.TimeInput(attrs={'type': 'time'}),
+            'fecha': forms.DateInput(
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control',
+                    'min': date.today().isoformat(),
+                }
+            ),
+            'hora': forms.TimeInput(
+                attrs={
+                    'type': 'time',
+                    'class': 'form-control',
+                    'min': time(8,0).strftime('%H:%M'),
+                    'max': time(16,0).strftime('%H:%M'),
+                    'step': 1800,
+                }
+            ),
+            'cliente_nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'paquete': forms.Select(attrs={'class': 'form-select'}),
+            'servicio': forms.Select(attrs={'class': 'form-select'}),
         }
-        labels = {
-            'paquete': 'Selecciona un paquete',
-            'tipo_evento': 'Tipo de evento',
-            'fecha': 'Fecha del evento',
-            'hora': 'Hora del evento',
-        }
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data['fecha']
+        if Reserva.objects.filter(fecha=fecha).count() >= 3:
+            raise ValidationError("Este día ya tiene 3 eventos, elige otra fecha.")
+        return fecha
+
+    def clean_hora(self):
+        hora = self.cleaned_data['hora']
+        if hora < time(8, 0) or hora > time(16, 0):
+            raise ValidationError("La hora debe estar entre 08:00 y 16:00")
+        return hora
 
 class VentaForm(forms.ModelForm):
     class Meta:
