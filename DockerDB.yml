@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.1
+    container_name: love_story_db
+    restart: always
+    ports:
+      - "3307:3306"  # 3307 en host, 3306 dentro del contenedor
+    environment:
+      MYSQL_DATABASE: love_story
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # permite root sin contraseña
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
