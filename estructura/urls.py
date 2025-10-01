@@ -12,6 +12,7 @@ urlpatterns = [
     path('reserva_exitosa/', views.reserva_exitosa, name='reserva_exitosa'),  # página de confirmación
     path('api/obtener-reservas/', views.obtener_reservas, name='obtener_reservas'),
     path('api/paquetes/', views.obtener_paquetes, name='obtener_paquetes'),
+    path('login_view', views.login_view, name='login_view'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('registrate/', views.register, name='registrate'),
     path('ideas/', views.ideas, name='ideas'),

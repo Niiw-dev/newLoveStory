@@ -53,29 +53,17 @@ class ReservaForm(forms.ModelForm):
         widgets = {
             'fecha': forms.HiddenInput(),
             'hora': forms.TimeInput(
+                format='%H:%M',
                 attrs={
                     'type': 'time',
                     'class': 'form-control',
-                    'min': time(8,0).strftime('%H:%M'),
-                    'max': time(16,0).strftime('%H:%M'),
                     'step': 60,
+                    'onclick': "this.showPicker();"
                 }
             ),
             'paquete': forms.Select(attrs={'class': 'form-select'}),
             'servicio': forms.Select(attrs={'class': 'form-select'}),
         }
-
-    def clean_fecha(self):
-        fecha = self.cleaned_data['fecha']
-        if Reserva.objects.filter(fecha=fecha).count() >= 3:
-            raise ValidationError("Este día ya tiene 3 eventos, elige otra fecha.")
-        return fecha
-
-    def clean_hora(self):
-        hora = self.cleaned_data['hora']
-        if hora < time(8, 0) or hora > time(16, 0):
-            raise ValidationError("La hora debe estar entre 08:00 y 16:00")
-        return hora
 
 class VentaForm(forms.ModelForm):
     class Meta:

@@ -41,7 +41,7 @@ function translateContent() {
 // Función para mantener el menú cerrado al hacer clic fuera de él
 window.onclick = function(event) {
     var menu = document.getElementById('accessibility-menu');
-    if (!event.target.matches('#accessibility-button') && !menu.contains(event.target)) {
+    if (menu && !event.target.matches('#accessibility-button') && !menu.contains(event.target)) {
         menu.style.display = 'none';
     }
 };

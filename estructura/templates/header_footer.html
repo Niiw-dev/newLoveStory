@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="{% static 'css/header_footer.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/accesibilidad.css' %}">
-    <link rel="stylesheet" href="{% static 'css/cookiebaner.css' %}">
-    
+    <link rel="stylesheet" href="{% static 'css/cookiebaner.css' %}?v1.3">
+
 </head>
-<body>
+<body style="margin: 0">
     <div id="ayuda-preguntas">
-        <a href="/ruta/al/archivo.pdf" target="_blank">
+        <a href="/ruta/al/archivo.pdf" target="_blank"></a>
         <button class="btn-ayuda">
             <img src="{% static 'images/Ayuda.png' %}"  alt="Ayuda">
         </button>
@@ -62,18 +62,21 @@
             </ul>
         </nav>
         <div class="user-actions">
-            <a href="{% url 'login' %}" class="accede">ACCEDE</a>
-            <a href="{% url 'registrate' %}" class="registrate">REGÍSTRATE</a>
-            <div class="user-menu-container">
-                <button class="user-button">
-                    <img src="{% static 'images/User.png' %}" alt="User Icon">
-                </button>
-                <div class="user-menu">
-                    <a href="{% url 'perfil_usuario' %}">Perfil</a>
-                    <a href="#">Configuración</a>
-                    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+            {% if user.is_authenticated and user.cliente %}
+                <div class="user-menu-container">
+                    <button class="user-button">
+                        <img src="{% static 'images/User.png' %}" alt="User Icon">
+                    </button>
+                    <div class="user-menu">
+                        <a href="{% url 'perfil_usuario' %}">Perfil</a>
+                        <a href="#">Configuración</a>
+                        <a href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="accede">ACCEDE</a>
+                <a href="{% url 'registrate' %}" class="registrate">REGÍSTRATE</a>
+            {% endif %}
         </div>
     </header>
     <div class="header-overlay"></div>
@@ -128,7 +131,7 @@
     <script src="https://kit.fontawesome.com/713b131395.js" crossorigin="anonymous"></script>
     
     <!-- Anuncio de Política de Cookies (centrado) -->
-<div id="cookie-banner" class="cookie-banner">
+<div id="cookie-banner" class="cookie-banner" style="display:none">
     <div class="cookie-content">
         <h3>Política de Cookies</h3>
         <p>Este sitio web utiliza cookies para mejorar tu experiencia de navegación. Al hacer clic en "Aceptar", consientes el uso de todas las cookies.</p>
@@ -166,7 +169,7 @@
     </div>
 </div>
 
-    <script src="{% static 'js/cookie-banner.js' %}"></script>
+    <script src="{% static 'js/cookie-banner.js' %}?v1.3"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

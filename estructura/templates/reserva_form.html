@@ -13,6 +13,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
@@ -61,7 +62,7 @@
 <div class="container m-5 text-align-center">
   <h2 class="mb-4">Agendar tu cita</h2>
 
-  <form id="reservaForm" method="POST" action="{% url 'agendar_reserva' %}">
+  <form id="reservaForm" method="POST" action="{% url 'agendar_reserva' %}" novalidate>
     {% csrf_token %}
 
     <!-- Paso 1 -->
@@ -75,10 +76,18 @@
         <input type="hidden" name="cliente_id" value="{{ user.cliente.id }}">
       {% endif %}
 
+      {% if messages %}
+        <div>
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <div class="d-flex py-3 px-1" style=" min-height:370px">
         <div class="col-md-6">
           <input id="datepicker" class="w-100 form-control">
-          <input type="hidden" id="fecha-seleccionada" name="fecha">
+          <input type="hidden" id="fecha-seleccionada" name="fecha" value="{{ fecha_default }}">
         </div>
          <!-- Hora, servicio, paquete -->
         <div class="col-md-6">
@@ -150,23 +159,15 @@
     // Quitar required de todo
     document.querySelectorAll('.step input, .step select, .step textarea').forEach(el => {
       if (el.hasAttribute("required")) {
-        el.setAttribute("data-required", "true"); // recordar que era required
+        el.setAttribute("data-required", "true");
       }
       el.removeAttribute("required");
-    });
-
-    // Poner required solo en el paso visible
-    document.querySelectorAll('#step' + step + ' input, #step' + step + ' select, #step' + step + ' textarea').forEach(el => {
-      if (el.dataset.required === "true") {
-        el.setAttribute("required", "required");
-      }
     });
   }
 
   function nextStep(step) {
     document.querySelectorAll('.step').forEach(s => s.classList.add('d-none'));
     document.getElementById('step' + step).classList.remove('d-none');
-    setRequired(step);
   }
 
   function prevStep(step) {
@@ -174,21 +175,26 @@
   }
 
   // Inicializar en el paso 1
-  document.addEventListener("DOMContentLoaded", () => setRequired(1));
   document.addEventListener("DOMContentLoaded", function() {
     let diasOcupados = {{ dias_ocupados|safe }};
 
     // 🚀 Inicializar calendario
     flatpickr("#datepicker", {
-      dateFormat: "Y-m-d",        // Formato yyyy-mm-dd
-      minDate: "today",           // No permitir fechas pasadas
-      locale: "es",               // Calendario en español
-      disable: diasOcupados,      // Bloquear días ocupados
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      locale: "es",
+      disable: diasOcupados,
       inline: true,
+      defaultDate: new Date().fp_incr(1), // 🚀 Selecciona mañana automáticamente
       onChange: function(selectedDates, dateStr, instance) {
         document.getElementById("fecha-seleccionada").value = dateStr;
+      },
+      onReady: function(selectedDates, dateStr, instance) {
+        // 🚀 Llenar hidden también cuando se carga por primera vez
+        document.getElementById("fecha-seleccionada").value = instance.input.value;
       }
     });
+
   });
 </script>
 

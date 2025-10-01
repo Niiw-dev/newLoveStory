@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import time, date
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
+from django.utils import timezone
+import datetime
 
 class Servicio(models.Model):
     tipo_de_servicio = models.CharField(max_length=100)
@@ -44,12 +47,12 @@ class Reserva(models.Model):
         ('cancelada', 'Cancelada'),
     ]
 
-    fecha = models.DateField()
-    hora = models.TimeField()
+    fecha = models.DateField(default=lambda: timezone.now().date() + datetime.timedelta(days=1))
+    hora = models.TimeField(default=timezone.now)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=10, choices=ESTADOS, default='pendiente')
     cliente = models.ForeignKey("Cliente", on_delete=models.CASCADE, default=1)
-    paquete = models.ForeignKey('Paquete', on_delete=models.CASCADE)
+    paquete = models.ForeignKey('Paquete', on_delete=models.CASCADE, default=1)
     servicio = models.ForeignKey('Servicio', on_delete=models.CASCADE, default=1)
 
     def clean(self):

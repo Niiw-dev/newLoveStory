@@ -10,10 +10,13 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 import json
-from datetime import date
+from datetime import date, time
+from django.utils import timezone
 from .models import Cliente, Paquete, Reserva, Servicio
 from .forms import ClienteRegistrationForm, ClienteUpdateForm, ReservaForm
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
 
 
 def acerca_de_nosotros(request):
@@ -36,11 +39,19 @@ def register(request):
     if request.method == 'POST':
         form = ClienteRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('inicio')
+            email = form.cleaned_data.get("email")
+
+            # Validar que no exista un User o Cliente con ese email
+            if User.objects.filter(email=email).exists():
+                form.add_error("email", "Este correo ya está registrado.")
+            else:
+                user = form.save()
+                login(request, user)
+                messages.success(request, "Cuenta creada exitosamente.")
+                return redirect('inicio')
     else:
         form = ClienteRegistrationForm()
+
     return render(request, 'registrate.html', {'form': form})
 
 # Vista de login personalizada (opcional, puedes usar LoginView también)
@@ -51,7 +62,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('reservas')
+            return redirect('inicio')
         else:
             messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
 
@@ -100,39 +111,64 @@ def agendar_reserva(request):
         if form.is_valid():
             reserva = form.save(commit=False)
 
-            if request.user.is_authenticated:
-                # Cliente ya existe
-                reserva.cliente = request.user.cliente
+            nombre = form.cleaned_data.get("nombre")
+            apellido = form.cleaned_data.get("apellido")
+            email = form.cleaned_data.get("email")
+            telefono = form.cleaned_data.get("telefono")
+            direccion = form.cleaned_data.get("direccion")
+            fecha = form.cleaned_data.get("fecha")
+            hora = form.cleaned_data.get("hora")
+            servicio = form.cleaned_data.get("servicio")
+            paquete = form.cleaned_data.get("paquete")
+
+            if not (nombre and apellido and email and telefono and direccion):
+                messages.warning(request, "Debes ingresar todos los datos del formulario.")
             else:
-                # Crear un nuevo usuario y cliente
-                nombre = form.cleaned_data.get("nombre")
-                apellido = form.cleaned_data.get("apellido")
-                email = form.cleaned_data.get("email")
-                telefono = form.cleaned_data.get("telefono")
-                direccion = form.cleaned_data.get("direccion")
+                if hora < time(8, 0) or hora > time(16, 0):
+                    messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 04:00pm.")
+                else:
+                    if request.user.is_authenticated:
+                        # Cliente ya existe
+                        reserva.cliente = request.user.cliente
+                        reserva.save()
+                        messages.success(request,
+                                         "Reserva creada con éxito. \n Gracias por agendar, te contactaremos para confirmar tu cita.")
+                    else:
+                        # Crear un nuevo usuario y cliente
+                        # 1. Buscar usuario o crearlo con password aleatorio
+                        user = User.objects.filter(email=email).first()
+                        if user:
+                            messages.warning(request, "Cuenta con correo "+email+" ya creado. \n Por favor ingrese a su cuenta para reservar o cambie su correo")
+                        else:
+                            user = User.objects.create_user(
+                                username=email.split("@")[0],
+                                email=email,
+                                password=get_random_string(10)
+                            )
 
-                if not (nombre and apellido and email):
-                    form.add_error(None, "Debes ingresar todos los datos de cliente.")
-                    return render(request, "reserva_form.html", {"form": form})
+                            # 2. Buscar cliente o crearlo
+                            cliente, created = Cliente.objects.get_or_create(
+                                user=user,
+                                defaults={
+                                    "nombre": nombre,
+                                    "apellido": apellido,
+                                    "email": email,
+                                    "telefono": telefono,
+                                    "direccion": direccion,
+                                }
+                            )
 
-                # Crear usuario automáticamente
-                user = User.objects.create_user(
-                    username=email,  # username = email
-                    email=email,
-                    password=User.objects.make_random_password()
-                )
-                cliente = Cliente.objects.create(
-                    user=user,
-                    nombre=nombre,
-                    apellido=apellido,
-                    email=email,
-                    telefono=telefono,
-                    direccion=direccion
-                )
-                reserva.cliente = cliente
+                            # 3. Crear reserva
+                            reserva = Reserva.objects.create(
+                                cliente=cliente,
+                                fecha=fecha,
+                                hora=hora,
+                                servicio=servicio,
+                                paquete=paquete
+                            )
 
-            reserva.save()
-            return redirect("reserva_exitosa")
+                            reserva.save()
+                            messages.success(request, "Reserva creada con éxito. \n Gracias por agendar, te contactaremos para confirmar tu cita.")
     else:
         form = ReservaForm()
 
@@ -142,6 +178,7 @@ def agendar_reserva(request):
     año_actual = hoy.year
     cal = calendar.Calendar()
     dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d.month == mes_actual]
+    fecha_default = (timezone.now() + timezone.timedelta(days=1)).date()
 
     # Contar reservas por día
     dias_ocupados = []
@@ -153,7 +190,8 @@ def agendar_reserva(request):
         "form": form,
         "dias_ocupados": mark_safe(json.dumps(dias_ocupados)),  # ✅ lista en JSON
         "mes_actual": mes_actual,
-        "año_actual": año_actual
+        "año_actual": año_actual,
+        "fecha_default": fecha_default
     })
 
 def reserva_exitosa(request):

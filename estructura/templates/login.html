@@ -24,7 +24,7 @@
     <div class="login-container">
         <div class="login-box" id="loginForm">
             <h2>Accede</h2>
-            <form method="POST" action="{% url 'login' %}">
+            <form method="POST" action="{% url 'login_view' %}">
                 {% csrf_token %}
                 <div class="input-group">
                     {{ form.username }}
