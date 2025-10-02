@@ -4,3 +4,4 @@ pillow
 mysql
 mysqlclient
 cryptography
+pytz

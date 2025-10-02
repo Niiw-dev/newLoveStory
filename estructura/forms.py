@@ -3,6 +3,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import date, time
+from django.utils import timezone
+from datetime import datetime
+from pytz import timezone as pytz_timezone
 
 from .models import Cliente, Reserva, Venta, Paquete
 import datetime
@@ -64,6 +67,13 @@ class ReservaForm(forms.ModelForm):
             'paquete': forms.Select(attrs={'class': 'form-select'}),
             'servicio': forms.Select(attrs={'class': 'form-select'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        bogota = pytz_timezone('America/Bogota')
+        ahora_bogota = timezone.now().astimezone(bogota).time()
+        if not self.instance.pk:
+            self.initial['hora'] = ahora_bogota
 
 class VentaForm(forms.ModelForm):
     class Meta:

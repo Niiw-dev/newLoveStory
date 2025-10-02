@@ -6,4 +6,4 @@ class EstructuraConfig(AppConfig):
 
     def ready(self):
         from .tasks import run_cancelar_reservas
-        run_cancelar_reservas()
+#        run_cancelar_reservas()
