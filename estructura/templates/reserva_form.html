@@ -177,7 +177,8 @@
   // Inicializar en el paso 1
   document.addEventListener("DOMContentLoaded", function() {
     let diasOcupados = {{ dias_ocupados|safe }};
-
+    let fechaDefault = "{{ fecha_default }}";  // formato: "YYYY-MM-DD"
+    console.log(fechaDefault);
     // 🚀 Inicializar calendario
     flatpickr("#datepicker", {
       dateFormat: "Y-m-d",
@@ -185,7 +186,7 @@
       locale: "es",
       disable: diasOcupados,
       inline: true,
-      defaultDate: new Date().fp_incr(1), // 🚀 Selecciona mañana automáticamente
+      defaultDate: fechaDefault, // 🚀 Selecciona mañana automáticamente
       onChange: function(selectedDates, dateStr, instance) {
         document.getElementById("fecha-seleccionada").value = dateStr;
       },

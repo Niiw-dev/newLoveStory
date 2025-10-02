@@ -216,21 +216,34 @@ def agendar_reserva(request):
     mes_actual = hoy.month
     año_actual = hoy.year
     cal = calendar.Calendar()
-    dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d.month == mes_actual]
-    fecha_default = (timezone.now() + timezone.timedelta(days=2)).date()
+    dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d >= hoy]  # solo días desde hoy en adelante
 
-    # Contar reservas por día
+    # Contar reservas por día y bloquear hoy solo si son pendientes
     dias_ocupados = []
     for d in dias_mes:
-        if Reserva.objects.filter(fecha=d).count() >= 3:
+        reservas_pendientes = Reserva.objects.filter(fecha=d, estado='pendiente').count()
+        if reservas_pendientes >= 3 or d == hoy or d == hoy+timedelta(days=1):
             dias_ocupados.append(d.strftime("%Y-%m-%d"))
+
+    # Seleccionar el primer día disponible
+    fecha_default = None
+    for d in dias_mes:
+        if d.strftime("%Y-%m-%d") not in dias_ocupados:
+            fecha_default = d
+            break
+
+    # Por seguridad
+    if fecha_default is None:
+        fecha_default = hoy + timedelta(days=1)
+
+    fecha_default_str = fecha_default.strftime("%Y-%m-%d")
 
     return render(request, "reserva_form.html", {
         "form": form,
-        "dias_ocupados": mark_safe(json.dumps(dias_ocupados)),  # ✅ lista en JSON
+        "dias_ocupados": mark_safe(json.dumps(dias_ocupados)),
         "mes_actual": mes_actual,
         "año_actual": año_actual,
-        "fecha_default": fecha_default
+        "fecha_default": fecha_default_str
     })
 
 def reserva_exitosa(request):
