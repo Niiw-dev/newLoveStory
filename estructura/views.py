@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth import authenticate, login, logout
 import json
 from datetime import date, time
@@ -17,6 +17,7 @@ from .forms import ClienteRegistrationForm, ClienteUpdateForm, ReservaForm
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
+import datetime
 
 
 def acerca_de_nosotros(request):
@@ -105,6 +106,32 @@ def perfil_usuario(request):
     }
     return render(request, 'perfil_usuario.html', context)
 
+def obtener_limite_pago():
+    ahora = timezone.now()
+    limite = datetime.datetime.fromtimestamp(
+        ahora.timestamp() + 48 * 60 * 60,
+        tz=timezone.get_current_timezone()
+    )
+    return limite
+
+def enviar_instrucciones_pago(reserva):
+    subject = "Instrucciones de pago para tu reserva"
+    message = (
+        f"Hola {reserva.cliente.nombre},\n\n"
+        f"Tu reserva está pendiente de pago:\n"
+        f"- Fecha: {reserva.fecha}\n"
+        f"- Hora: {reserva.hora}\n"
+        f"- Servicio: {reserva.servicio.tipo_de_servicio}\n"
+        f"- Paquete: {reserva.paquete.nombre_paquete}\n\n"
+        f"💰 Monto total: ${reserva.monto}\n"
+        f"📱 Paga a Nequi: 300 XXX XX XX\n"
+        f"🔑 Código de referencia: {reserva.payment_reference}\n\n"
+        f"👉 Escribe este código en el concepto de la transferencia.\n"
+        f"Tienes hasta {reserva.limite_pago.strftime('%d/%m/%Y %H:%M')} para pagar.\n\n"
+        "Si no recibimos tu pago antes de esa hora, la reserva será cancelada automáticamente."
+    )
+    send_mail(subject, message, "reservaslovestory@gmail.com", [reserva.cliente.email])
+
 def agendar_reserva(request):
     if request.method == "POST":
         form = ReservaForm(request.POST)
@@ -121,18 +148,24 @@ def agendar_reserva(request):
             servicio = form.cleaned_data.get("servicio")
             paquete = form.cleaned_data.get("paquete")
 
-            if not (nombre and apellido and email and telefono and direccion):
-                messages.warning(request, "Debes ingresar todos los datos del formulario.")
+            if hora < time(8, 0) or hora > time(16, 0):
+                messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 04:00pm.")
             else:
-                if hora < time(8, 0) or hora > time(16, 0):
-                    messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 04:00pm.")
+                if request.user.is_authenticated:
+                    # Cliente ya existe
+                    reserva.cliente = request.user.cliente
+                    reserva.estado = "pendiente"
+                    reserva.limite_pago = obtener_limite_pago()
+                    reserva.calcular_monto()
+                    reserva.save()
+                    reserva.generar_referencia()
+                    reserva.save()
+
+                    enviar_instrucciones_pago(reserva)
+                    messages.success(request, "Reserva creada. Te enviamos instrucciones de pago a tu correo.")
                 else:
-                    if request.user.is_authenticated:
-                        # Cliente ya existe
-                        reserva.cliente = request.user.cliente
-                        reserva.save()
-                        messages.success(request,
-                                         "Reserva creada con éxito. \n Gracias por agendar, te contactaremos para confirmar tu cita.")
+                    if not (nombre and apellido and email and telefono and direccion):
+                        messages.warning(request, "Debes ingresar todos los datos del formulario.")
                     else:
                         # Crear un nuevo usuario y cliente
                         # 1. Buscar usuario o crearlo con password aleatorio
@@ -164,11 +197,17 @@ def agendar_reserva(request):
                                 fecha=fecha,
                                 hora=hora,
                                 servicio=servicio,
-                                paquete=paquete
+                                paquete=paquete,
+                                estado="pendiente",
+                                limite_pago=obtener_limite_pago,
                             )
-
+                            reserva.calcular_monto()
                             reserva.save()
-                            messages.success(request, "Reserva creada con éxito. \n Gracias por agendar, te contactaremos para confirmar tu cita.")
+                            reserva.generar_referencia()
+                            reserva.save()
+
+                            enviar_instrucciones_pago(reserva)
+                            messages.success(request, "Reserva creada. Te enviamos instrucciones de pago a tu correo.")
     else:
         form = ReservaForm()
 
@@ -178,7 +217,7 @@ def agendar_reserva(request):
     año_actual = hoy.year
     cal = calendar.Calendar()
     dias_mes = [d for d in cal.itermonthdates(año_actual, mes_actual) if d.month == mes_actual]
-    fecha_default = (timezone.now() + timezone.timedelta(days=1)).date()
+    fecha_default = (timezone.now() + timezone.timedelta(days=2)).date()
 
     # Contar reservas por día
     dias_ocupados = []

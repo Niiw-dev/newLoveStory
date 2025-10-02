@@ -4,7 +4,20 @@ from datetime import time, date
 from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from django.utils import timezone
+from datetime import datetime
+import uuid
 import datetime
+
+def obtener_limite_pago():
+    ahora = timezone.now()
+    limite = datetime.datetime.fromtimestamp(
+        ahora.timestamp() + 24 * 60 * 60,
+        tz=timezone.get_current_timezone()
+    )
+    return limite
+
+def default_fecha():
+    return timezone.now().date() + datetime.timedelta(days=2)
 
 class Servicio(models.Model):
     tipo_de_servicio = models.CharField(max_length=100)
@@ -47,13 +60,24 @@ class Reserva(models.Model):
         ('cancelada', 'Cancelada'),
     ]
 
-    fecha = models.DateField(default=lambda: timezone.now().date() + datetime.timedelta(days=1))
+    fecha = models.DateField(default=default_fecha)
     hora = models.TimeField(default=timezone.now)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=10, choices=ESTADOS, default='pendiente')
     cliente = models.ForeignKey("Cliente", on_delete=models.CASCADE, default=1)
     paquete = models.ForeignKey('Paquete', on_delete=models.CASCADE, default=1)
     servicio = models.ForeignKey('Servicio', on_delete=models.CASCADE, default=1)
+    monto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    limite_pago = models.DateTimeField(default=obtener_limite_pago)
+    payment_reference = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    creado_en = models.DateTimeField(default=timezone.now)
+
+    def generar_referencia(self):
+        if not self.payment_reference:
+            self.payment_reference = f"RK-{uuid.uuid4().hex[:6].upper()}"
+
+    def calcular_monto(self):
+        self.monto = (self.servicio.precio_base if self.servicio else 0) + (self.paquete.precio if self.paquete else 0)
 
     def clean(self):
         # máximo 3 eventos por día
