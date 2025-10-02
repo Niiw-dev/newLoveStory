@@ -11,11 +11,14 @@ function toggleDarkMode() {
     var body = document.body;
     body.classList.toggle('dark-mode');
     var iconElement = document.getElementById('dark-mode-icon');
-    
+    const themeLink = document.getElementById("flatpickr-theme");
+
     if (body.classList.contains('dark-mode')) {
         iconElement.src = "{% static 'images/Luna.png' %}"; // Icono de luna
+        themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/dark.css"; // aquí pones el que quiera
     } else {
         iconElement.src = "{% static 'images/Sol.png' %}"; // Icono de sol
+        themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/material_orange.css"; // aquí pones el que quiera
     }
 }
 

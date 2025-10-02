@@ -217,3 +217,9 @@
 .user-menu-container:hover .user-menu {
     display: block;
 }
+
+body.dark-mode input#datepicker {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
