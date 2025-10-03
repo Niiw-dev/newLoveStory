@@ -7,7 +7,7 @@
     <title>{% block titulo %}Love Story{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/header_footer.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/accesibilidad.css' %}?v1.2">
+    <link rel="stylesheet" href="{% static 'css/accesibilidad.css' %}?v1.3">
     <link rel="stylesheet" href="{% static 'css/cookiebaner.css' %}?v1.3">
 
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
@@ -24,7 +24,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
 <link id="flatpickr-theme" rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/confetti.css">
-
+<style>
+    .dark-mode a, .dark-mode h3, .dark-mode p {
+        color:white !important;
+    }
+    .dark-mode .user-menu, .dark-mode .submenu {
+        background-color:#121212 !important;
+    }
+    .dark-mode a:hover {
+        background-color:#363636 !important;
+    }
+ h1 { font-size: 32px; }
+    p  { font-size: 16px; }
+    a  { font-size: 14px; }
+</style>
 
 </head>
 <body style="margin: 0">
@@ -38,10 +51,12 @@
         <i class="fa fa-universal-access"></i>
     </div>
     <div id="accessibility-menu" class="accessibility-menu">
-        <button id="toggle-dark-mode" onclick="toggleDarkMode()">Modo Oscuro/Claro</button>
+        <button id="toggle-dark-mode" onclick="toggleDarkMode()" style="border-top-left-radius: 10px;border-top-right-radius: 10px">Modo Oscuro/Claro</button>
         <button id="increase-font-size" onclick="increaseFontSize()">Aumentar Tamaño de Letra</button>
         <button id="decrease-font-size" onclick="decreaseFontSize()">Disminuir Tamaño de Letra</button>
-        <button id="translate-button" onclick="translateContent()">Traducir</button>
+        <button id="reset-font-size" onclick="resetFontSize()" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px">Restablecer</button>
+
+<!--        <button id="translate-button" onclick="translateContent()" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px">Traducir</button>-->
     </div>
     <header class="main-header">
         <div class="logo">

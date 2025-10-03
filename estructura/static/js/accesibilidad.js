@@ -21,13 +21,38 @@ function toggleDarkMode() {
         themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/confetti.css"; // aquí pones el que quiera
     }
 }
+let originalSizes = new Map(); // guarda los tamaños originales
+
+function changeFontSize(delta) {
+    const elements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, a, span, li, div");
+
+    elements.forEach(el => {
+        // si aún no tenemos guardado el tamaño original, lo guardamos
+        if (!originalSizes.has(el)) {
+            let style = window.getComputedStyle(el, null).getPropertyValue('font-size');
+            originalSizes.set(el, style);
+        }
+
+        // aumentar o disminuir tamaño
+        let style = window.getComputedStyle(el, null).getPropertyValue('font-size');
+        let currentSize = parseFloat(style);
+        el.style.fontSize = (currentSize + delta) + "px";
+    });
+}
 
 function increaseFontSize() {
-    document.body.style.fontSize = 'larger';
+    changeFontSize(1);
 }
 
 function decreaseFontSize() {
-    document.body.style.fontSize = 'smaller';
+    changeFontSize(-1);
+}
+
+function resetFontSize() {
+    // restaurar tamaños guardados
+    originalSizes.forEach((size, el) => {
+        el.style.fontSize = size;
+    });
 }
 
 function translateContent() {
@@ -64,6 +89,7 @@ const translations = {
 document.getElementById('toggle-dark-mode').insertAdjacentHTML('afterbegin', '<img id="dark-mode-icon" class="icon" src="{% static \'icons/sun-icon.svg\' %}" alt="Dark Mode Icon"> ');
 document.getElementById('increase-font-size').insertAdjacentHTML('afterbegin', '<img class="icon" src="{% static \'icons/arrow-up-icon.svg\' %}" alt="Increase Font Size Icon"> ');
 document.getElementById('decrease-font-size').insertAdjacentHTML('afterbegin', '<img class="icon" src="{% static \'icons/arrow-down-icon.svg\' %}" alt="Decrease Font Size Icon"> ');
+document.getElementById('reset-font-size').insertAdjacentHTML('afterbegin', '<img class="icon" src="{% static \'icons/reset-icon.svg\' %}" alt="Reset Font Size Icon"> ');
 document.getElementById('translate-button').insertAdjacentHTML('afterbegin', '<img class="icon" src="{% static \'icons/dictionary-icon.svg\' %}" alt="Translate Icon"> ');
 
 document.querySelector('.btn-ayuda').addEventListener('click', function() {

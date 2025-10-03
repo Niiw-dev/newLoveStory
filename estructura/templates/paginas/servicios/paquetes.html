@@ -1,6 +1,15 @@
+{% extends "header_footer.html" %}
+{% block titulo %}Reserva{% endblock %}
+
 {% load static %}
 
-{% block content %}
+{% block contenido %}
+<style>
+    .dark-mode .paquete-card, .dark-mode .modal-content{
+        background-color: #36363636;
+    }
+</style>
+
 <div class="container">
     <h1 class="main-title">Nuestros Paquetes Fotográficos</h1>
     
