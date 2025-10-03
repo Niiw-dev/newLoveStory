@@ -81,7 +81,7 @@ class Reserva(models.Model):
 
     def clean(self):
         # máximo 3 eventos por día
-        if Reserva.objects.filter(fecha=self.fecha).exclude(pk=self.pk).count() >= 3:
+        if Reserva.objects.filter(fecha=self.fecha, estado='pendiente').exclude(pk=self.pk).count() >= 3:
             raise ValidationError("Ya se han agendado 3 eventos para este día.")
 
     def save(self, *args, **kwargs):

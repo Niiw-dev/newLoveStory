@@ -9,6 +9,7 @@ urlpatterns = [
     path('acerca_de_nosotros/', views.acerca_de_nosotros, name='acerca_de_nosotros'),
     path('', views.inicio, name='inicio'),
     path('reserva/', views.agendar_reserva, name='agendar_reserva'),
+    path('reservas_lista/', views.reservas_lista, name='reservas_lista'),
     path('reserva_exitosa/', views.reserva_exitosa, name='reserva_exitosa'),  # página de confirmación
     path('api/obtener-reservas/', views.obtener_reservas, name='obtener_reservas'),
     path('api/paquetes/', views.obtener_paquetes, name='obtener_paquetes'),
@@ -21,5 +22,5 @@ urlpatterns = [
     path('paquetes/', views.paquetes, name='paquetes'),
     path('api/horas-disponibles/', views.horas_disponibles, name='horas_disponibles'),
     path('guardar_reserva/', views.guardar_reserva_ajax, name='guardar_reserva_ajax'),
-   
+    path("reservas/confirmar/<int:reserva_id>/", views.confirmar_reserva, name="confirmar_reserva"),
 ]

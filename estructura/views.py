@@ -1,6 +1,6 @@
 import calendar
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -18,6 +18,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 import datetime
+from django.urls import reverse
 
 
 def acerca_de_nosotros(request):
@@ -133,9 +134,13 @@ def enviar_instrucciones_pago(reserva):
     send_mail(subject, message, "reservaslovestory@gmail.com", [reserva.cliente.email])
 
 def agendar_reserva(request):
+    print("si entra")
     if request.method == "POST":
         form = ReservaForm(request.POST)
+
+        print(form)
         if form.is_valid():
+
             reserva = form.save(commit=False)
 
             nombre = form.cleaned_data.get("nombre")
@@ -147,10 +152,13 @@ def agendar_reserva(request):
             hora = form.cleaned_data.get("hora")
             servicio = form.cleaned_data.get("servicio")
             paquete = form.cleaned_data.get("paquete")
+            print("si entra")
 
             if hora < time(8, 0) or hora > time(16, 0):
                 messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 04:00pm.")
             else:
+                print("si entra 2")
+
                 if request.user.is_authenticated:
                     # Cliente ya existe
                     reserva.cliente = request.user.cliente
@@ -199,7 +207,7 @@ def agendar_reserva(request):
                                 servicio=servicio,
                                 paquete=paquete,
                                 estado="pendiente",
-                                limite_pago=obtener_limite_pago,
+                                limite_pago=obtener_limite_pago(),
                             )
                             reserva.calcular_monto()
                             reserva.save()
@@ -249,6 +257,26 @@ def agendar_reserva(request):
 def reserva_exitosa(request):
     return render(request, 'reserva_exitosa.html')
 
+def reservas_lista(request):
+    # Traer todas las reservas (puedes filtrar por cliente si es vista para usuarios normales)
+    reservas = Reserva.objects.all().select_related("cliente", "servicio", "paquete")
+
+    return render(request, "reservas_lista.html", {"reservas": reservas})
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+@user_passes_test(lambda u: u.is_staff)
+@login_required
+def confirmar_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    if reserva.estado != "confirmada":
+        reserva.estado = "confirmada"
+        reserva.save()
+        messages.success(request, f"La reserva {reserva.payment_reference} fue confirmada ✅")
+    else:
+        messages.info(request, f"La reserva {reserva.payment_reference} ya estaba confirmada")
+
+    return redirect(reverse("reservas_lista"))
 
 # API para paquetes
 def obtener_paquetes(request):

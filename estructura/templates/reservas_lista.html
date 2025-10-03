@@ -1,0 +1,80 @@
+{% extends 'header_footer.html' %}
+{% load static %}
+
+{% block contenido %}
+    <div class="card shadow-lg border-0 rounded-3 w-75 m-5">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📅 Lista de Reservas</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tablaReservas" class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
+                            <th>Paquete</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Monto</th>
+                            <th>Referencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reservas %}
+                        <tr>
+                            <td>{{ r.cliente.nombre }} {{ r.cliente.apellido }}</td>
+                            <td>{{ r.servicio.tipo_de_servicio }}</td>
+                            <td>{{ r.paquete.nombre_paquete }}</td>
+                            <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                            <td>{{ r.hora|time:"H:i" }}</td>
+                            <td>
+                                {% if r.estado == "pendiente" %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% elif r.estado == "confirmada" %}
+                                    <span class="badge bg-success">Confirmada</span>
+                                {% elif r.estado == "cancelada" %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ r.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ r.monto }}</td>
+                            <td>{{ r.payment_reference }}</td>
+                            <td>
+                                {% if r.estado == "cancelada" %}
+                                    <span class="badge bg-secondary">Cancelada</span>
+                                {% elif r.estado != "confirmada" %}
+                                    <a href="{% url 'confirmar_reserva' r.id %}"
+                                       class="btn btn-sm btn-success">
+                                        ✅ Confirmar
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-success">Confirmada</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+<script>
+$(document).ready(function() {
+    $('#tablaReservas').DataTable({
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+        },
+        pageLength: 5,
+        lengthMenu: [5, 10, 20, 50],
+        responsive: true
+    });
+});
+</script>
+{% endblock %}
