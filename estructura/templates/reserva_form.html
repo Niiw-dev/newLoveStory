@@ -89,7 +89,7 @@ main {
       {% endif %}
 
       {% if messages %}
-        <div>
+        <div id="messages-container">
           {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">{{ message }}</div>
           {% endfor %}
@@ -208,6 +208,16 @@ main {
       }
     });
 
+    // Espera 3 segundos (3000 ms) y oculta los mensajes
+    setTimeout(() => {
+      const container = document.getElementById('messages-container');
+      if(container){
+        // Animación suave (opcional)
+        container.style.transition = 'opacity 0.5s';
+        container.style.opacity = '0';
+        setTimeout(() => container.remove(), 500); // Luego de la animación, elimina el div
+      }
+    }, 3000);
   });
 </script>
 

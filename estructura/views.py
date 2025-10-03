@@ -154,8 +154,8 @@ def agendar_reserva(request):
             paquete = form.cleaned_data.get("paquete")
             print("si entra")
 
-            if hora < time(8, 0) or hora > time(16, 0):
-                messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 04:00pm.")
+            if hora < time(8, 0) or hora > time(17, 0):
+                messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 05:00pm.")
             else:
                 print("si entra 2")
 
@@ -216,6 +216,10 @@ def agendar_reserva(request):
 
                             enviar_instrucciones_pago(reserva)
                             messages.success(request, "Reserva creada. Te enviamos instrucciones de pago a tu correo.")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
     else:
         form = ReservaForm()
 

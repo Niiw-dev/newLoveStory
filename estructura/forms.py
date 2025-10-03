@@ -68,6 +68,34 @@ class ReservaForm(forms.ModelForm):
             'servicio': forms.Select(attrs={'class': 'form-select'}),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha = cleaned_data.get('fecha')
+        hora = cleaned_data.get('hora')
+        paquete = cleaned_data.get('paquete')
+
+        if not fecha or not hora or not paquete:
+            return cleaned_data
+
+        # Duración del paquete + 1 hora extra
+        duracion_total_minutos = paquete.duracion + 60
+        nueva_reserva_inicio = datetime.datetime.combine(fecha, hora)
+        nueva_reserva_fin = nueva_reserva_inicio + datetime.timedelta(minutes=duracion_total_minutos)
+
+        # Revisar todas las reservas existentes ese día
+        reservas_dia = Reserva.objects.filter(fecha=fecha)
+        for r in reservas_dia:
+            inicio = datetime.datetime.combine(r.fecha, r.hora)
+            fin = inicio + datetime.timedelta(minutes=r.paquete.duracion + 60)
+
+            # Validación de solapamiento
+            if (nueva_reserva_inicio < fin) and (nueva_reserva_fin > inicio):
+                raise forms.ValidationError(
+                    f"No se puede agendar en ese horario. Ocupado desde {inicio.time().strftime('%H:%M')} hasta {fin.time().strftime('%H:%M')}."
+                )
+
+        return cleaned_data
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         bogota = pytz_timezone('America/Bogota')
