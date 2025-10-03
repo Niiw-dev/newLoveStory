@@ -26,7 +26,8 @@
     display: grid !important;
     grid-template-columns: repeat(7, 1fr); /* 7 días por fila */
     max-width: 100% !important;
-    margin: 3px 0;
+    margin: 0.5px 0;
+    min-width: 0;
   }
 
   .flatpickr-days{
@@ -45,11 +46,16 @@
 
   #datepicker{
       text-align: center;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
   }
-
+.imgFecha.form-control{
+    padding: 0;
+    border-radius: 5px 0 0 5px;
+}
 main {
     color: white;
-    background-image: url("https://neliosoftware.com/es/wp-content/uploads/sites/3/2018/07/aziz-acharki-549137-unsplash-1200x775.jpg");
+      background-image: url("{% static 'images/fondoReservas.png' %}");
     background-repeat: no-repeat;      /* evita que se repita */
     background-size: cover;            /* ajusta la imagen para cubrir todo el div */
     background-position: center;       /* centra la imagen */
@@ -58,7 +64,7 @@ main {
 }
 
 .container {
-    background: rgba(0, 0, 0, 0.25); /* leve transparencia */
+    background: rgba(0, 0, 0, 0.15); /* leve transparencia */
     backdrop-filter: blur(8px);           /* efecto borroso */
     -webkit-backdrop-filter: blur(8px);   /* soporte en Safari */
     border-radius: 10px;                  /* opcional */
@@ -66,8 +72,13 @@ main {
 }
 
 .flatpickr-calendar,.flatpickr-innerContainer {
-    border-bottom-left-radius: 5px !important;
     border-bottom-right-radius: 5px !important;
+}
+    .flatpickr-weekday{
+        color: white !important;
+    }
+.flatpickr-months .flatpickr-month {
+    border-radius: 0 5px 0 0;
 }
 </style>
 
@@ -97,12 +108,18 @@ main {
       {% endif %}
 
       <div class="d-flex py-3 px-1" style=" min-height:370px">
-        <div class="col-md-6">
-          <input id="datepicker" class="w-100 form-control">
-          <input type="hidden" id="fecha-seleccionada" name="fecha" value="{{ fecha_default }}">
+        <div class="d-flex col-md-8">
+            <div class="col-md-7 p-0">
+                <img id="imagen-mes" class="imgFecha form-control" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="col-md-5 p-0">
+                <input id="datepicker" class="w-100 form-control">
+                <input type="hidden" id="fecha-seleccionada" name="fecha" value="{{ fecha_default }}">
+            </div>
         </div>
+
          <!-- Hora, servicio, paquete -->
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="d-flex flex-column justify-content-between px-1" style="min-height:325px">
               <div class="form-group">
                 <label>Hora</label>
@@ -186,11 +203,26 @@ main {
     nextStep(step);
   }
 
+  const imagenesPorMes = {
+    0: "{% static 'images/Calendario1.jpeg' %}",
+    1: "{% static 'images/Calendario2.jpeg' %}",
+    2: "{% static 'images/Calendario3.jpeg' %}",
+    3: "{% static 'images/Calendario4.jpeg' %}",
+    4: "{% static 'images/Calendario5.jpeg' %}",
+    5: "{% static 'images/Calendario6.jpeg' %}",
+    6: "{% static 'images/Calendario7.jpeg' %}",
+    7: "{% static 'images/Calendario8.jpeg' %}",
+    8: "{% static 'images/Calendario9.jpeg' %}",
+    9: "{% static 'images/Calendario10.jpeg' %}",
+    10: "{% static 'images/Calendario11.jpeg' %}",
+    11: "{% static 'images/Calendario12.jpeg' %}"
+  };
+
   // Inicializar en el paso 1
   document.addEventListener("DOMContentLoaded", function() {
     let diasOcupados = {{ dias_ocupados|safe }};
     let fechaDefault = "{{ fecha_default }}";  // formato: "YYYY-MM-DD"
-    console.log(fechaDefault);
+
     // 🚀 Inicializar calendario
     flatpickr("#datepicker", {
       dateFormat: "Y-m-d",
@@ -202,9 +234,14 @@ main {
       onChange: function(selectedDates, dateStr, instance) {
         document.getElementById("fecha-seleccionada").value = dateStr;
       },
+      onMonthChange: function(selectedDates, dateStr, instance) {
+        let mesActual = instance.currentMonth; // 0 = enero, 11 = diciembre
+        document.getElementById("imagen-mes").src = imagenesPorMes[mesActual];
+      },
       onReady: function(selectedDates, dateStr, instance) {
-        // 🚀 Llenar hidden también cuando se carga por primera vez
         document.getElementById("fecha-seleccionada").value = instance.input.value;
+        let mesActual = instance.currentMonth;
+        document.getElementById("imagen-mes").src = imagenesPorMes[mesActual];
       }
     });
 
