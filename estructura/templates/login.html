@@ -10,18 +10,18 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body>
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
+<body class="d-flex ">
     <a href="{% url 'inicio' %}" class="back-button"><i class="fas fa-arrow-left"></i></a>
 
     <div class="login-container">
+        {% if messages %}
+        <div id="messages-container">
+          {% for message in messages %}
+            <div class="alert alert-warning">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
         <div class="login-box" id="loginForm">
             <h2>Accede</h2>
             <form method="POST" action="{% url 'login_view' %}">

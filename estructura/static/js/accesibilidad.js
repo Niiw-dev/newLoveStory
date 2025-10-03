@@ -18,7 +18,7 @@ function toggleDarkMode() {
         themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/dark.css"; // aquí pones el que quiera
     } else {
         iconElement.src = "{% static 'images/Sol.png' %}"; // Icono de sol
-        themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/material_orange.css"; // aquí pones el que quiera
+        themeLink.href = "https://npmcdn.com/flatpickr/dist/themes/confetti.css"; // aquí pones el que quiera
     }
 }
 
@@ -44,7 +44,9 @@ function translateContent() {
 // Función para mantener el menú cerrado al hacer clic fuera de él
 window.onclick = function(event) {
     var menu = document.getElementById('accessibility-menu');
-    if (menu && !event.target.matches('#accessibility-button') && !menu.contains(event.target)) {
+    var button = document.getElementById('accessibility-button');
+
+    if (menu && !button.contains(event.target) && !menu.contains(event.target)) {
         menu.style.display = 'none';
     }
 };
