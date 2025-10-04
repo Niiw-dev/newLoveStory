@@ -1,0 +1,159 @@
+.reservas-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.contenido-reserva {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+
+.imagen-reserva, .calendario-reserva {
+    width: 50%;
+    max-width: 600px;
+    height: 600px; /* Establecemos un tamaño fijo tanto para la imagen como el calendario */
+    position: relative;
+}
+
+.imagen-reserva img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* La imagen se ajusta completamente al contenedor */
+    border-radius: 8px;
+}
+
+.frase-motivacional {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 18px;
+    font-style: italic;
+    color: #555;
+}
+
+.calendario-reserva {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#calendario {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+/* Añadir decoración en las esquinas usando pseudo-elementos */
+#calendario::before, #calendario::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(238, 255, 252); /* Cambia este color según prefieras */
+    border-radius: 50%; /* Hacemos las formas circulares */
+}
+
+/* Posiciona la decoración en las esquinas */
+#calendario::before {
+    top: -25px;
+    left: -25px;
+}
+
+#calendario::after {
+    bottom: -25px;
+    right: -25px;
+}
+
+/* Estilo para los días del calendario */
+.fc-daygrid-day {
+    border: 1px solid #ddd; /* Bordes a cada celda del calendario */
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px; /* Bordes redondeados dentro de cada día */
+}
+
+/* Estilo para los días que tienen eventos */
+.fc-event {
+    background-color: #f0f17fbe;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* Bordes decorativos a los lados del calendario */
+.calendario-reserva {
+    position: relative;
+    padding: 20px;
+}
+
+.calendario-reserva::before, .calendario-reserva::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 100%;
+    background-color: #eef;
+    top: 0;
+}
+
+.calendario-reserva::before {
+    left: 0;
+}
+
+.calendario-reserva::after {
+    right: 0;
+}
+
+/* Ajustes de responsividad */
+@media (max-width: 768px) {
+    #calendario {
+        width: 100%;
+        height: auto;
+    }
+}
+
+#formulario-reserva {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+#hora, #servicio, #tipo-evento {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#boton-reserva {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#boton-reserva:hover {
+    background-color: #0056b3;
+}
+#formulario-reserva select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 300px;
+}

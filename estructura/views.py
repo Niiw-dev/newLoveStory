@@ -1,5 +1,4 @@
 import calendar
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,10 +6,9 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, timedelta
+from datetime import date, time, timedelta
 from django.contrib.auth import authenticate, login, logout
 import json
-from datetime import date, time
 from django.utils import timezone
 from .models import Cliente, Paquete, Reserva, Servicio
 from .forms import ClienteRegistrationForm, ClienteUpdateForm, ReservaForm
@@ -19,6 +17,39 @@ from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 import datetime
 from django.urls import reverse
+from .google_calendar import get_calendar_service
+from .google_calendar import crear_evento_google_calendar
+
+
+def crear_evento_google_calendar(reserva):
+    service = get_calendar_service()
+
+    fecha_hora_inicio = datetime.datetime.combine(reserva.fecha, reserva.hora)
+
+    fecha_hora_fin = fecha_hora_inicio + timedelta(hours=1)
+    print(fecha_hora_fin)
+    event = {
+        'summary': f"Reserva pendiente de pago - {reserva.servicio.tipo_de_servicio}",
+        'description': (
+            f"Cliente: {reserva.cliente.nombre} {reserva.cliente.apellido}\n"
+            f"Paquete: {reserva.paquete.nombre_paquete}\n"
+            f"Monto: ${reserva.monto}\n"
+            f"Límite de pago: {reserva.limite_pago.strftime('%d/%m/%Y %H:%M')}\n"
+            f"Referencia: {reserva.payment_reference}"
+        ),
+        'start': {'dateTime': fecha_hora_inicio.isoformat(), 'timeZone': 'America/Bogota'},
+        'end': {'dateTime': fecha_hora_fin.isoformat(), 'timeZone': 'America/Bogota'},
+        'reminders': {
+            'useDefault': False,
+            'overrides': [
+                {'method': 'popup', 'minutes': 60},   # recordatorio 1h antes
+                {'method': 'popup', 'minutes': 10},   # y 10min antes
+            ],
+        },
+    }
+
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print(f"Evento creado: {event.get('htmlLink')}")
 
 
 def acerca_de_nosotros(request):
@@ -132,13 +163,12 @@ def enviar_instrucciones_pago(reserva):
         "Si no recibimos tu pago antes de esa hora, la reserva será cancelada automáticamente."
     )
     send_mail(subject, message, "reservaslovestory@gmail.com", [reserva.cliente.email])
+    send_mail(subject, message, "reservaslovestory@gmail.com", "reservaslovestory@gmail.com")
 
 def agendar_reserva(request):
-    print("si entra")
     if request.method == "POST":
         form = ReservaForm(request.POST)
 
-        print(form)
         if form.is_valid():
 
             reserva = form.save(commit=False)
@@ -152,13 +182,10 @@ def agendar_reserva(request):
             hora = form.cleaned_data.get("hora")
             servicio = form.cleaned_data.get("servicio")
             paquete = form.cleaned_data.get("paquete")
-            print("si entra")
 
             if hora < time(8, 0) or hora > time(17, 0):
                 messages.warning(request, "La hora seleccionada no es válida. \n El horario permitido es de 08:00am a 05:00pm.")
             else:
-                print("si entra 2")
-
                 if request.user.is_authenticated:
                     # Cliente ya existe
                     reserva.cliente = request.user.cliente
@@ -276,6 +303,8 @@ def confirmar_reserva(request, reserva_id):
     if reserva.estado != "confirmada":
         reserva.estado = "confirmada"
         reserva.save()
+        crear_evento_google_calendar(reserva)
+
         messages.success(request, f"La reserva {reserva.payment_reference} fue confirmada ✅")
     else:
         messages.info(request, f"La reserva {reserva.payment_reference} ya estaba confirmada")
