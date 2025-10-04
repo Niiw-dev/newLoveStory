@@ -51,7 +51,6 @@ def crear_evento_google_calendar(reserva):
     event = service.events().insert(calendarId='primary', body=event).execute()
     print(f"Evento creado: {event.get('htmlLink')}")
 
-
 def acerca_de_nosotros(request):
     return render(request, 'paginas/nosotros/acerca_de_nosotros.html')
 
