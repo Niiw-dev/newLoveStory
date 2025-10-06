@@ -63,16 +63,14 @@ El sistema permite:
 
 ### 🧩 Estructura del Proyecto
 ```textplain
-📦 newLoveStory
- ┣ 📂 agenda/              # Módulo principal de agendamiento y reservas
- ┣ 📂 core/                # Configuración base del proyecto Django
- ┣ 📂 static/              # Archivos estáticos (CSS, JS, imágenes)
- ┣ 📂 templates/           # Plantillas HTML renderizadas por Django
- ┣ 📂 usuarios/            # Gestión de usuarios, login y permisos
- ┣ 🛢️ db.sqlite3           # Base de datos local (para desarrollo o pruebas)
- ┣ 📜 manage.py            # Script principal de Django
+📦 cuerpoSano
+ ┣ 📂 estructura/          # Lógica principal del sistema de agendamiento y reservas
+ ┣ 📂 sistema/             # Configuración base del proyecto Django (ajustes, URLs, apps)
+ ┣ 📂 staticfiles/         # Archivos estáticos (CSS, JS, imágenes)
+ ┣ 📜 DockerDB.yml         # Configuración de base de datos y servicios con Docker
+ ┣ 📜 manage.py            # Script principal para ejecutar tareas de Django
  ┣ 📜 requirements.txt     # Dependencias del proyecto
- ┗ 📜 README.md            # Documentación del proyecto
+ ┗ 📜 README.md            # Documentación general del proyecto
 ```
 
 ---
